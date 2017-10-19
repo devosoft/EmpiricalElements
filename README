@@ -1,0 +1,10 @@
+This poject contains the most heavily used code from Empirical that can be used
+without any includes or dependencies beyond the C++ standard library.  Our goal
+is to simplify the incorporation of these files into new projects.
+
+Most of the files here are originally from the Empirical source/tools/ folder,
+but modified to use the (less safe) std:: version of classes, templates, and
+asserts.  Each file will be marked in its header when it was last converted.
+
+The full Empirical library is available at:
+https://github.com/devosoft/Empirical
