@@ -6,13 +6,12 @@
  *  @file  BitVector.h
  *  @brief A drop-in replacement for std::vector<bool>, with additional bitwise logic features.
  *  @note Status: RELEASE
- *
+ *  @note Converted to stand-alone: October 20, 2017
  */
 
 
 #ifndef EMP_BIT_VECTOR_H
 #define EMP_BIT_VECTOR_H
-
 
 #include <assert.h>
 #include <iostream>
