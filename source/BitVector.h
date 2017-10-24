@@ -19,13 +19,13 @@
 
 namespace emp {
 
-  /// Quick bit-mask generator for low bits.                                                          
+  /// Quick bit-mask generator for low bits.
   template <typename TYPE>
     static constexpr TYPE MaskLow(std::size_t num_bits) {
     return (num_bits == 8*sizeof(TYPE)) ? ((TYPE)-1) : ((((TYPE)1) << num_bits) - 1);
   }
 
-  /// How many bits are set to one in each possible byte?                                             
+  /// How many bits are set to one in each possible byte?
   constexpr size_t ByteCount[256] = {
     0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
     1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
@@ -37,7 +37,7 @@ namespace emp {
     3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8
   };
 
-  /// Count the number of bits in a 64-bit unsigned integer.                                          
+  /// Count the number of bits in a 64-bit unsigned integer.
   inline constexpr size_t count_bits(uint64_t val) {
     return
       ByteCount[  val >> 56         ] +
@@ -50,7 +50,7 @@ namespace emp {
       ByteCount[  val        & 0xFF ];
   }
 
-  /// Count the number of bits in a 32-bit unsigned integer.                                          
+  /// Count the number of bits in a 32-bit unsigned integer.
   inline constexpr size_t count_bits(uint32_t val) {
     return
       ByteCount[  val >> 24         ] +
@@ -59,7 +59,7 @@ namespace emp {
       ByteCount[  val        & 0xFF ];
   }
 
-  /// Return the position of the first one bit (in a 64-bit unsigned int)                             
+  /// Return the position of the first one bit (in a 64-bit unsigned int)
   template <typename T>
   inline constexpr size_t find_bit(const T & val) { return count_bits( (~val) & (val-1) ); }
 
@@ -218,7 +218,8 @@ namespace emp {
 
       // Mask out any bits that have left-shifted away
       const size_t last_bit_id = LastBitID();
-      if (last_bit_id) { bit_set[NUM_FIELDS - 1] &= (1U << last_bit_id) - 1U; }
+      constexpr field_t val1 = 1;
+      if (last_bit_id) { bit_set[NUM_FIELDS - 1] &= (val1 << last_bit_id) - val1; }
     }
 
 
@@ -382,7 +383,8 @@ namespace emp {
       assert(index < num_bits);
       const size_t field_id = FieldID(index);
       const size_t pos_id = FieldPos(index);
-      return (bit_set[field_id] & (static_cast<field_t>(1) << pos_id)) != 0;
+      constexpr field_t val1 = 1;
+      return (bit_set[field_id] & (val1 << pos_id)) != 0;
     }
 
     /// Update the bit value at the specified index.
@@ -390,7 +392,8 @@ namespace emp {
       assert(index < num_bits);
       const size_t field_id = FieldID(index);
       const size_t pos_id = FieldPos(index);
-      const field_t pos_mask = static_cast<field_t>(1) << pos_id;
+      constexpr field_t val1 = 1;
+      const field_t pos_mask = val1 << pos_id;
 
       if (value) bit_set[field_id] |= pos_mask;
       else       bit_set[field_id] &= ~pos_mask;
@@ -420,7 +423,8 @@ namespace emp {
       const size_t field_id = Byte2Field(index);
       const size_t pos_id = Byte2FieldPos(index);
       const field_t val_uint = value;
-      bit_set[field_id] = (bit_set[field_id] & ~(static_cast<field_t>(255) << pos_id)) | (val_uint << pos_id);
+      constexpr field_t val255 = 255;
+      bit_set[field_id] = (bit_set[field_id] & ~(val255 << pos_id)) | (val_uint << pos_id);
     }
 
     /// Retrive the 32-bit uint from the specifeid uint index.
@@ -489,7 +493,8 @@ namespace emp {
     // Set all bits to 1.
     void SetAll() {
       const size_t NUM_FIELDS = NumFields();
-      for (size_t i = 0; i < NUM_FIELDS; i++) bit_set[i] = ~(0U);
+      constexpr field_t all0 = 0;
+      for (size_t i = 0; i < NUM_FIELDS; i++) bit_set[i] = ~all0;
       if (LastBitID() > 0) { bit_set[NUM_FIELDS - 1] &= MaskLow<field_t>(LastBitID()); }
     }
 
@@ -565,7 +570,8 @@ namespace emp {
       if (field_id == NUM_FIELDS) return -1;  // Failed to find bit!
 
       const size_t pos_found = find_bit(bit_set[field_id]);
-      bit_set[field_id] &= ~(1U << pos_found);
+      constexpr field_t val1 = 1;
+      bit_set[field_id] &= ~(val1 << pos_found);
       return (int) (pos_found + (field_id * FIELD_BITS));
     }
 
